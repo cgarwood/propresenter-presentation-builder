@@ -1,0 +1,9 @@
+*     text eol=lf
+*.ts  whitespace=error
+*.js  whitespace=error
+
+*.ico binary
+*.jpg binary
+*.png binary
+*.zip binary
+*.mp3 binary
