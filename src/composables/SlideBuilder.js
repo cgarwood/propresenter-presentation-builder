@@ -62,8 +62,15 @@ export function useSlideBuilder() {
   }
   async function buildTitleSlide(entry, template) {
     const newSlide = await getSlideTemplate(template);
-    // Give it a new UUID
     newSlide.uuid.string = uuidv4();
+    return newSlide;
+  }
+
+  async function buildBlankSlide(entry, template) {
+    const newSlide = await getSlideTemplate(template);
+    newSlide.uuid.string = uuidv4();
+    const action = newSlide.actions.find((a) => a.type === 11);
+    action.label = {};
     return newSlide;
   }
 

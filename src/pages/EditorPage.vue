@@ -5,6 +5,7 @@
       outlined
       label="ProPresenter Template"
       class="q-mb-md"
+      readonly
       v-model="outline.templatePath"
       @click="openTemplate"
     />
@@ -52,11 +53,12 @@
       </q-fab>
     </q-page-sticky>
     <q-page-sticky position="bottom-left" :offset="[18, 18]">
-      <q-fab
+      <q-btn
+        fab
         icon="mdi-duck"
         label="Generate Presentation"
         @click="buildDocumentFromOutline"
-        color="primary"
+        color="green-7"
       />
     </q-page-sticky>
   </q-page>
