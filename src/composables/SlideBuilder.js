@@ -142,7 +142,7 @@ export function useSlideBuilder() {
     return newSlide;
   }
 
-  async function generateFile(presentationData, filename = null) {
+  async function generateFile(presentationData) {
     const presentationProto = await protobuf.load("/proto/presentation.proto");
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
