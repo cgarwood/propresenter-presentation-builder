@@ -23,6 +23,7 @@
     "uuid": "^9.0.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0",
+    "vue3-smooth-dnd": "^0.0.6",
     "youversion-suggest": "^2.0.1"
   },
   "devDependencies": {

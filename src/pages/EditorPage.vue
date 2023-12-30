@@ -9,36 +9,40 @@
       v-model="outline.templatePath"
       @click="openTemplate"
     />
-    <q-list bordered v-for="(entry, index) in outline.entries" :key="index">
-      <q-expansion-item
-        :expand-separator="true"
-        :caption-lines="1"
-        :header-class="headerClass(entry)"
-        :expand-icon-class="outlineEntryTypes[entry.type].textColor"
-      >
-        <template v-slot:header>
-          <q-item-section avatar>
-            <q-icon :name="icon(entry)" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label :class="outlineEntryTypes[entry.type].textColor">
-              {{ label(entry) }}
-            </q-item-label>
-            <q-item-label
-              caption
-              :class="outlineEntryTypes[entry.type].textColor"
-              lines="1"
-            >
-              {{ caption(entry) }}
-            </q-item-label>
-          </q-item-section>
-        </template>
-        <Component
-          :is="outlineEntryTypes[entry.type].component"
-          :entryId="index"
-          class="q-pa-md"
-        />
-      </q-expansion-item>
+    <q-list bordered>
+      <Container @drop="onDrop">
+        <Draggable v-for="(entry, index) in outline.entries" :key="index">
+          <q-expansion-item
+            :expand-separator="true"
+            :caption-lines="1"
+            :header-class="headerClass(entry)"
+            :expand-icon-class="outlineEntryTypes[entry.type].textColor"
+          >
+            <template v-slot:header>
+              <q-item-section avatar>
+                <q-icon :name="icon(entry)" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label :class="outlineEntryTypes[entry.type].textColor">
+                  {{ label(entry) }}
+                </q-item-label>
+                <q-item-label
+                  caption
+                  :class="outlineEntryTypes[entry.type].textColor"
+                  lines="1"
+                >
+                  {{ caption(entry) }}
+                </q-item-label>
+              </q-item-section>
+            </template>
+            <Component
+              :is="outlineEntryTypes[entry.type].component"
+              :entryId="index"
+              class="q-pa-md"
+            />
+          </q-expansion-item>
+        </Draggable>
+      </Container>
     </q-list>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-fab color="primary" icon="mdi-plus" label="New Item" direction="up">
@@ -66,6 +70,7 @@
 
 <script setup>
 import { v4 as uuidv4 } from "uuid";
+import { Container, Draggable } from "vue3-smooth-dnd";
 import { useOutlineStore } from "../stores/outline";
 import { useSlideBuilder } from "../composables/SlideBuilder";
 import { outlineEntryTypes } from "src/const.js";
@@ -92,6 +97,25 @@ function icon(entry) {
 function headerClass(entry) {
   const entryType = outlineEntryTypes[entry.type];
   return [`bg-${entryType.color}`, entryType.textColor];
+}
+
+function onDrop(dropResult) {
+  outline.entries = applyDrag(outline.entries, dropResult);
+}
+function applyDrag(arr, dragResult) {
+  const { removedIndex, addedIndex, payload } = dragResult;
+
+  if (removedIndex === null && addedIndex === null) return arr;
+  const result = [...arr];
+  let itemToAdd = payload;
+
+  if (removedIndex !== null) {
+    itemToAdd = result.splice(removedIndex, 1)[0];
+  }
+  if (addedIndex !== null) {
+    result.splice(addedIndex, 0, itemToAdd);
+  }
+  return result;
 }
 
 async function openTemplate() {
