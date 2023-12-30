@@ -26,5 +26,14 @@ export const useOutlineStore = defineStore("outline", {
     removeEntry(index) {
       this.entries.splice(index, 1);
     },
+    async exportOutline() {
+      const data = JSON.stringify(this.$state);
+      await window.fileApi.saveOutline(data, `${this.name}.json`);
+    },
+    async loadOutline() {
+      const { path, data } = await window.fileApi.openOutline();
+      console.log(data);
+      this.$patch(JSON.parse(data));
+    },
   },
 });

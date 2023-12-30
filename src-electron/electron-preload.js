@@ -109,6 +109,45 @@ contextBridge.exposeInMainWorld("fileApi", {
     fs.writeFileSync(path.filePath, data);
   },
 
+  async saveOutline(data, defaultPath = null) {
+    const path = await dialog.showSaveDialog({
+      title: "Save Outline",
+      defaultPath,
+      filters: [
+        {
+          name: "JSON",
+          extensions: ["json"],
+        },
+      ],
+    });
+
+    if (path.canceled) {
+      return;
+    }
+
+    fs.writeFileSync(path.filePath, data);
+  },
+
+  async openOutline() {
+    const openPath = await dialog.showOpenDialog({
+      title: "Open Outline",
+      filters: [
+        {
+          name: "JSON",
+          extensions: ["json"],
+        },
+      ],
+    });
+
+    if (openPath.canceled) {
+      return;
+    }
+    const filePath = openPath.filePaths[0];
+    const file = fs.readFileSync(filePath);
+    const data = new TextDecoder().decode(file);
+    return { path: filePath, data: data };
+  },
+
   async save(presentationData) {
     const publicFolder = path.resolve(
       __dirname,

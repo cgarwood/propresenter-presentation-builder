@@ -98,12 +98,8 @@ async function openTemplate() {
   const template = await window.fileApi.openTemplate();
   if (!template) return;
 
-  console.log(template);
-
   outline.template = template.data;
   outline.templatePath = template.path;
-
-  console.log(outline);
 }
 
 async function buildDocumentFromOutline() {
