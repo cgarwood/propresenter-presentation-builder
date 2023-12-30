@@ -151,7 +151,6 @@ async function buildDocumentFromOutline() {
 
   // Get the template for the presentation
   const presentation = await getPresentationTemplate(outline.template);
-  console.log("Presentation", { ...presentation });
 
   // Wipe the cues from the template so we can add our own
   presentation.cues = [];
@@ -166,7 +165,17 @@ async function buildDocumentFromOutline() {
   const slides = [];
   slides.push(await buildSlideFromTemplate({}, "title"));
   for (const entry of outline.entries) {
-    slides.push(await buildSlideFromTemplate(entry, entry.type));
+    const slide = await buildSlideFromTemplate(entry, entry.type);
+
+    // Some slide generators will return multiple slides (for example, a long verse will be split into multiple slides)
+    // so we have to check if we're getting a single slide or an array of slides
+    if (!Array.isArray(slide)) {
+      slides.push(slide);
+    } else if (slide.length == 1) {
+      slides.push(slide[0]);
+    } else {
+      slides.push(...slide);
+    }
   }
 
   // Add the slides to the presentation

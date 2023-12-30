@@ -33,7 +33,6 @@ export function useSlideBuilder() {
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
     templateData = toRaw(template);
-    console.log("templateData", templateData);
     const pres = await Presentation.decode(toRaw(template));
 
     return pres;
@@ -44,7 +43,6 @@ export function useSlideBuilder() {
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
     const pres = await Presentation.decode(templateData);
-    console.log("pres", pres);
     let template = null;
     // Get template based on name
     for (const cue of pres.cues) {
@@ -57,9 +55,9 @@ export function useSlideBuilder() {
     if (!template) {
       throw new Error(`Template ${name} not found`);
     }
-    //console.log("Got Template", template);
     return template;
   }
+
   async function buildTitleSlide(entry, template) {
     const newSlide = await getSlideTemplate(template);
     newSlide.uuid.string = uuidv4();
@@ -104,42 +102,109 @@ export function useSlideBuilder() {
   }
 
   async function buildVerseSlide(entry, template) {
-    const newSlide = await getSlideTemplate(template);
+    // We may need to split verses into multiple slides.
+    // We should eventually make the target and grace values configurable on the outline.
+    const TARGET_SLIDE_CHARS = 350;
+    const SLIDE_GRACE_CHARS = 50;
+    const MAX_SLIDE_CHARS = TARGET_SLIDE_CHARS + SLIDE_GRACE_CHARS;
+    const MIN_SLIDE_CHARS = TARGET_SLIDE_CHARS - SLIDE_GRACE_CHARS * 2;
 
-    // Give it a new UUID
-    newSlide.uuid.string = uuidv4();
+    let newSlides = [];
+    let slideTexts = [];
+    let verseText = toRaw(entry.text);
 
-    // Find the action with type 11 (slide type)
-    const action = newSlide.actions.find((a) => a.type === 11);
+    const punctuation = RegExp("[,;)'\":…]\\s", "g");
+    while (verseText.length > MAX_SLIDE_CHARS) {
+      var testRegion = verseText.substring(MIN_SLIDE_CHARS, TARGET_SLIDE_CHARS);
 
-    // Update Verse element
-    const verseElement = action.slide.presentation.baseSlide.elements.find(
-      (e) => e.element.name === "Text"
-    );
-    let rtfData = new TextDecoder().decode(verseElement.element.text.rtfData);
-    let replacedRtf = rtfData.replace("[TEXT]", entry.text);
-    let newRtfData = new TextEncoder().encode(replacedRtf);
-    verseElement.element.text.rtfData = newRtfData;
+      // find possible split points before the target slide size
+      var lastNewLineLoc = testRegion.lastIndexOf("\n");
+      var lastPeriodLoc = testRegion.lastIndexOf(".");
+      var lastSpaceLoc = testRegion.lastIndexOf(" ");
+      var lastPunctuationLoc = -1;
+      for (var match in testRegion.matchAll(punctuation)) {
+        if (match.start > lastPunctuationLoc) lastPunctuationLoc = match.start;
+      }
 
-    // Update Reference element
-    const referenceElement = action.slide.presentation.baseSlide.elements.find(
-      (e) => ["Caption", "Reference"].includes(e.element.name)
-    );
-    rtfData = new TextDecoder().decode(referenceElement.element.text.rtfData);
-    replacedRtf = rtfData.replace(
-      "[TEXT]",
-      `${entry.reference ?? ""} ${entry.translation ?? ""}`
-    );
-    newRtfData = new TextEncoder().encode(replacedRtf);
-    referenceElement.element.text.rtfData = newRtfData;
+      // the real split is the largest number smaller than target_slide_chars
+      // with priority given to grammar concerns
+      var slideChars = TARGET_SLIDE_CHARS;
+      if (lastNewLineLoc > -1 && lastNewLineLoc < TARGET_SLIDE_CHARS) {
+        slideChars = MIN_SLIDE_CHARS + lastNewLineLoc;
+      } else if (lastPeriodLoc > -1 && lastPeriodLoc < TARGET_SLIDE_CHARS) {
+        slideChars = MIN_SLIDE_CHARS + lastPeriodLoc;
+      } else if (
+        lastPunctuationLoc > -1 &&
+        lastPunctuationLoc < TARGET_SLIDE_CHARS
+      ) {
+        slideChars = MIN_SLIDE_CHARS + lastPunctuationLoc;
+      } else if (lastSpaceLoc > -1 && lastSpaceLoc < TARGET_SLIDE_CHARS) {
+        slideChars = MIN_SLIDE_CHARS + lastSpaceLoc;
+      }
 
-    // Update label
-    action.label = {
-      color: { red: 0, green: 0, blue: 0, alpha: 0 },
-      text: `${entry.reference ?? ""} ${entry.translation ?? ""}`,
-    };
+      // create a slide with the proper amount of text and reduce "remaining"
+      const realText = verseText.substring(0, slideChars);
+      verseText = verseText.substring(slideChars);
 
-    return newSlide;
+      slideTexts.push(realText);
+    }
+
+    // Add the remainder of the text to the last slide
+    slideTexts.push(verseText);
+
+    // If there are multiple slides, add "..." to the end of all but the last slide
+    // and add "..." to the beginning of all but the first slide.
+    if (slideTexts.length > 1) {
+      for (let i = 0; i < slideTexts.length; i++) {
+        if (i < slideTexts.length - 1) {
+          slideTexts[i] += "...";
+        }
+        if (i >= 1) {
+          slideTexts[i] = `...${slideTexts[i]}`;
+        }
+      }
+    }
+
+    for (const text of slideTexts) {
+      const newSlide = await getSlideTemplate(template);
+
+      // Give it a new UUID
+      newSlide.uuid.string = uuidv4();
+
+      // Find the action with type 11 (slide type)
+      const action = newSlide.actions.find((a) => a.type === 11);
+
+      // Update Verse element
+      const verseElement = action.slide.presentation.baseSlide.elements.find(
+        (e) => e.element.name === "Text"
+      );
+      let rtfData = new TextDecoder().decode(verseElement.element.text.rtfData);
+      let replacedRtf = rtfData.replace("[TEXT]", text);
+      let newRtfData = new TextEncoder().encode(replacedRtf);
+      verseElement.element.text.rtfData = newRtfData;
+
+      // Update Reference element
+      const referenceElement =
+        action.slide.presentation.baseSlide.elements.find((e) =>
+          ["Caption", "Reference"].includes(e.element.name)
+        );
+      rtfData = new TextDecoder().decode(referenceElement.element.text.rtfData);
+      replacedRtf = rtfData.replace(
+        "[TEXT]",
+        `${entry.reference ?? ""} ${entry.translation ?? ""}`
+      );
+      newRtfData = new TextEncoder().encode(replacedRtf);
+      referenceElement.element.text.rtfData = newRtfData;
+
+      // Update label
+      action.label = {
+        color: { red: 0, green: 0, blue: 0, alpha: 0 },
+        text: `${entry.reference ?? ""} ${entry.translation ?? ""}`,
+      };
+
+      newSlides.push(newSlide);
+    }
+    return newSlides;
   }
 
   async function generateFile(presentationData) {
