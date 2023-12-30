@@ -34,6 +34,21 @@
                   {{ caption(entry) }}
                 </q-item-label>
               </q-item-section>
+              <q-item-section class="col-shrink">
+                <q-btn flat dense icon="mdi-dots-vertical">
+                  <q-menu>
+                    <q-list>
+                      <q-item
+                        clickable
+                        v-close-popup
+                        @click="outline.removeEntry(index)"
+                      >
+                        <q-item-section>Delete</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-btn>
+              </q-item-section>
             </template>
             <Component
               :is="outlineEntryTypes[entry.type].component"
