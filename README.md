@@ -6,6 +6,8 @@ Still in development and not currently stable.
 
 This is my first Electron app, so it's a bit rough.
 
+Thanks to @greyshirtguy for reverse-engineering the ProPresenter [protobuf files](https://github.com/greyshirtguy/ProPresenter7-Proto)
+
 ## Template Setup
 
 Create a Presentation in ProPresenter and add slides with the following labels:
