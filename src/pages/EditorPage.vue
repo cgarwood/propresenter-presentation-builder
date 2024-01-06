@@ -205,3 +205,9 @@ async function buildDocumentFromOutline() {
   window.fileApi.saveFile(buffer, `${outline.name}`);
 }
 </script>
+
+<style lang="scss" scoped>
+.q-page {
+  padding-bottom: 82px;
+}
+</style>
