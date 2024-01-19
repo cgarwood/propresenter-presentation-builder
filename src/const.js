@@ -23,3 +23,6 @@ export const outlineEntryTypes = {
     component: PointWidget,
   },
 };
+
+export const ACTION_SLIDE = 11;
+export const ACTION_MEDIA = 2;

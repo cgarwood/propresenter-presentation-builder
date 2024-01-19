@@ -1,6 +1,7 @@
 import { toRaw } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import protobuf from "protobufjs";
+import { ACTION_SLIDE } from "src/const";
 
 export function useSlideBuilder() {
   let templateData = null;
@@ -46,7 +47,7 @@ export function useSlideBuilder() {
     let template = null;
     // Get template based on name
     for (const cue of pres.cues) {
-      const action = cue.actions.find((a) => a.type === 11);
+      const action = cue.actions.find((a) => a.type === ACTION_SLIDE);
       if (action && action.label.text.toLowerCase() === name.toLowerCase()) {
         template = cue;
         break;
@@ -67,7 +68,8 @@ export function useSlideBuilder() {
   async function buildBlankSlide(entry, template) {
     const newSlide = await getSlideTemplate(template);
     newSlide.uuid.string = uuidv4();
-    const action = newSlide.actions.find((a) => a.type === 11);
+    const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
+    action.uuid.string = uuidv4();
     action.label = {};
     return newSlide;
   }
@@ -78,9 +80,9 @@ export function useSlideBuilder() {
     // Give it a new UUID
     newSlide.uuid.string = uuidv4();
 
-    // Find the action with type 11 (slide type)
-    const action = newSlide.actions.find((a) => a.type === 11);
-
+    // Find the action for the slide layer
+    const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
+    action.uuid.string = uuidv4();
     const textElementIndex =
       action.slide.presentation.baseSlide.elements.findIndex(
         (e) => e.element.text.rtfData !== null
@@ -171,8 +173,9 @@ export function useSlideBuilder() {
       // Give it a new UUID
       newSlide.uuid.string = uuidv4();
 
-      // Find the action with type 11 (slide type)
-      const action = newSlide.actions.find((a) => a.type === 11);
+      // Find the action for the slide layer
+      const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
+      action.uuid.string = uuidv4();
 
       // Update Verse element
       const verseElement = action.slide.presentation.baseSlide.elements.find(
