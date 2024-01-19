@@ -15,6 +15,7 @@ Create a Presentation in ProPresenter and add slides with the following labels:
 - Title
 - Point
 - Verse
+- Blank
 
 The Verse slide should contain two text boxes. One textbox named "Reference" or "Caption" for the verse reference, and one named "Text" for the verse text.
 
@@ -36,28 +37,8 @@ npm install
 quasar dev
 ```
 
-### Lint the files
-
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-### Format the files
-
-```bash
-yarn format
-# or
-npm run format
-```
-
 ### Build the app for production
 
 ```bash
 quasar build
 ```
-
-### Customize the configuration
-
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
