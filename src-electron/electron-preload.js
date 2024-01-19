@@ -148,14 +148,22 @@ contextBridge.exposeInMainWorld("fileApi", {
     return { path: filePath, data: data };
   },
 
-  async save(presentationData) {
-    const publicFolder = path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER
-    );
-    fs.writeFileSync(
-      path.join(publicFolder, "/Presentation.pro"),
-      presentationData
-    );
+  async openPro7Presentation() {
+    const openPath = await dialog.showOpenDialog({
+      title: "Open ProPresenter7 Presentation",
+      filters: [
+        {
+          name: "ProPresenter7 Presentation",
+          extensions: ["pro"],
+        },
+      ],
+    });
+
+    if (openPath.canceled) {
+      return;
+    }
+    const filePath = openPath.filePaths[0];
+    const file = fs.readFileSync(filePath);
+    return { path: filePath, data: file };
   },
 });

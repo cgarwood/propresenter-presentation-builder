@@ -36,7 +36,7 @@
       id="mainDrawer"
     >
       <q-list>
-        <q-item clickable v-close-popup>
+        <q-item clickable v-close-popup to="/">
           <q-item-section avatar>
             <q-icon name="home" />
           </q-item-section>
@@ -44,36 +44,20 @@
           <q-item-section>Home</q-item-section>
         </q-item>
 
-        <q-item clickable v-close-popup>
+        <q-item clickable v-close-popup to="/editor">
           <q-item-section avatar>
             <q-icon name="settings" />
           </q-item-section>
 
-          <q-item-section>Settings</q-item-section>
+          <q-item-section>Outline Editor</q-item-section>
         </q-item>
 
-        <q-item clickable v-close-popup>
+        <q-item clickable v-close-popup to="/analyze">
           <q-item-section avatar>
             <q-icon name="info" />
           </q-item-section>
 
-          <q-item-section>About</q-item-section>
-        </q-item>
-
-        <q-item clickable v-close-popup>
-          <q-item-section avatar>
-            <q-icon name="help" />
-          </q-item-section>
-
-          <q-item-section>Help</q-item-section>
-        </q-item>
-
-        <q-item clickable v-close-popup>
-          <q-item-section avatar>
-            <q-icon name="exit_to_app" />
-          </q-item-section>
-
-          <q-item-section>Logout</q-item-section>
+          <q-item-section>Presentation Analyzer</q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
