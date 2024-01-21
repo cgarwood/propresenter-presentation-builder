@@ -83,6 +83,8 @@ export function useSlideBuilder() {
     // Find the action for the slide layer
     const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
     action.uuid.string = uuidv4();
+    action.slide.presentation.baseSlide.uuid.string = uuidv4();
+
     const textElementIndex =
       action.slide.presentation.baseSlide.elements.findIndex(
         (e) => e.element.text.rtfData !== null
@@ -97,6 +99,8 @@ export function useSlideBuilder() {
     // Convert the string back to a Uint8Array
     const newRtfData = new TextEncoder().encode(replacedRtf);
     textElement.element.text.rtfData = newRtfData;
+
+    textElement.element.uuid.string = uuidv4();
 
     action.label = {};
 
@@ -176,6 +180,7 @@ export function useSlideBuilder() {
       // Find the action for the slide layer
       const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
       action.uuid.string = uuidv4();
+      action.slide.presentation.baseSlide.uuid.string = uuidv4();
 
       // Update Verse element
       const verseElement = action.slide.presentation.baseSlide.elements.find(
@@ -185,6 +190,7 @@ export function useSlideBuilder() {
       let replacedRtf = rtfData.replace("[TEXT]", text);
       let newRtfData = new TextEncoder().encode(replacedRtf);
       verseElement.element.text.rtfData = newRtfData;
+      verseElement.element.uuid.string = uuidv4();
 
       // Update Reference element
       const referenceElement =
@@ -198,6 +204,7 @@ export function useSlideBuilder() {
       );
       newRtfData = new TextEncoder().encode(replacedRtf);
       referenceElement.element.text.rtfData = newRtfData;
+      referenceElement.element.uuid.string = uuidv4();
 
       // Update label
       action.label = {
