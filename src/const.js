@@ -24,5 +24,9 @@ export const outlineEntryTypes = {
   },
 };
 
+export const templateLabels = Object.values(outlineEntryTypes).map((entry) =>
+  entry.label.toLowerCase()
+);
+
 export const ACTION_SLIDE = 11;
 export const ACTION_MEDIA = 2;

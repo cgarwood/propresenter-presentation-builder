@@ -1,7 +1,7 @@
 import { toRaw } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import protobuf from "protobufjs";
-import { ACTION_SLIDE } from "src/const";
+import { ACTION_SLIDE, templateLabels } from "src/const";
 
 export function useSlideBuilder() {
   let templateData = null;
@@ -225,7 +225,21 @@ export function useSlideBuilder() {
     return newPresBuffer;
   }
 
+  async function getSupportedWidgets(templateData) {
+    let supportedWidgets = [];
+    const presentation = await getPresentationTemplate(templateData);
+
+    for (const cue of presentation.cues) {
+      const action = cue.actions.find((a) => a.type === ACTION_SLIDE);
+      if (action && templateLabels.includes(action.label.text.toLowerCase())) {
+        supportedWidgets.push(action.label.text.toLowerCase());
+      }
+    }
+    return supportedWidgets;
+  }
+
   return {
+    getSupportedWidgets,
     getPresentationTemplate,
     getSlideTemplate,
     buildSlideFromTemplate,

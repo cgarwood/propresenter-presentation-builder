@@ -20,7 +20,21 @@
           >
             <template v-slot:header>
               <q-item-section avatar>
-                <q-icon :name="icon(entry)" />
+                <q-icon :name="icon(entry)">
+                  <q-badge
+                    floating
+                    rounded
+                    color="red-7"
+                    style="right: -6px; padding: 2px"
+                    v-if="!app.supportedWidgets.includes(entry.type)"
+                  >
+                    <q-icon name="mdi-exclamation-thick" />
+                  </q-badge>
+                </q-icon>
+                <q-tooltip v-if="!app.supportedWidgets.includes(entry.type)">
+                  This widget is not supported by the loaded ProPresenter
+                  template.
+                </q-tooltip>
               </q-item-section>
               <q-item-section>
                 <q-item-label :class="outlineEntryTypes[entry.type].textColor">
@@ -87,11 +101,18 @@
 import { v4 as uuidv4 } from "uuid";
 import { Container, Draggable } from "vue3-smooth-dnd";
 import { useOutlineStore } from "../stores/outline";
+import { useAppStore } from "src/stores/app";
 import { useSlideBuilder } from "../composables/SlideBuilder";
 import { outlineEntryTypes } from "src/const.js";
 const outline = useOutlineStore();
-const { getPresentationTemplate, buildSlideFromTemplate, generateFile } =
-  useSlideBuilder();
+const app = useAppStore();
+
+const {
+  getPresentationTemplate,
+  buildSlideFromTemplate,
+  generateFile,
+  getSupportedWidgets,
+} = useSlideBuilder();
 
 // Compute properties based on entry type
 function caption(entry) {
@@ -139,6 +160,7 @@ async function openTemplate() {
 
   outline.template = template.data;
   outline.templatePath = template.path;
+  app.supportedWidgets = await getSupportedWidgets(outline.template);
 }
 
 async function buildDocumentFromOutline() {
@@ -165,6 +187,9 @@ async function buildDocumentFromOutline() {
   const slides = [];
   slides.push(await buildSlideFromTemplate({}, "title"));
   for (const entry of outline.entries) {
+    // If the loaded template doesn't support the widget, don't attempt to build it
+    if (!app.supportedWidgets.includes(entry.type)) continue;
+
     const slide = await buildSlideFromTemplate(entry, entry.type);
 
     // Some slide generators will return multiple slides (for example, a long verse will be split into multiple slides)
