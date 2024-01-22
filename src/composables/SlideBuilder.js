@@ -184,7 +184,7 @@ export function useSlideBuilder() {
 
       // Update Verse element
       const verseElement = action.slide.presentation.baseSlide.elements.find(
-        (e) => e.element.name === "Text"
+        (e) => ["Text", "TextElement", "Verse"].includes(e.element.name)
       );
       let rtfData = new TextDecoder().decode(verseElement.element.text.rtfData);
       let replacedRtf = rtfData.replace("[TEXT]", text);
