@@ -22,6 +22,8 @@ export function useSlideBuilder() {
         return await buildPointSlide(slide, template);
       case "verse":
         return await buildVerseSlide(slide, template);
+      case "quote":
+        return await buildQuoteSlide(slide, template);
       case "blank":
         return await buildBlankSlide(slide, template);
       default:
@@ -215,6 +217,43 @@ export function useSlideBuilder() {
       newSlides.push(newSlide);
     }
     return newSlides;
+  }
+
+  async function buildQuoteSlide(entry, template) {
+    const newSlide = await getSlideTemplate(template);
+
+    // Give it a new UUID
+    newSlide.uuid.string = uuidv4();
+
+    // Find the action for the slide layer
+    const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
+    action.uuid.string = uuidv4();
+    action.slide.presentation.baseSlide.uuid.string = uuidv4();
+
+    // Update Quote element
+    const quoteElement = action.slide.presentation.baseSlide.elements.find(
+      (e) => ["Text", "TextElement", "Quote"].includes(e.element.name)
+    );
+    let rtfData = new TextDecoder().decode(quoteElement.element.text.rtfData);
+    let replacedRtf = rtfData.replace("[TEXT]", entry.text);
+    let newRtfData = new TextEncoder().encode(replacedRtf);
+    quoteElement.element.text.rtfData = newRtfData;
+    quoteElement.element.uuid.string = uuidv4();
+
+    // Update Reference element
+    const referenceElement = action.slide.presentation.baseSlide.elements.find(
+      (e) =>
+        ["Caption", "Reference", "Author", "Quote Author"].includes(
+          e.element.name
+        )
+    );
+    rtfData = new TextDecoder().decode(referenceElement.element.text.rtfData);
+    replacedRtf = rtfData.replace("[TEXT]", `${entry.author ?? ""}`);
+    newRtfData = new TextEncoder().encode(replacedRtf);
+    referenceElement.element.text.rtfData = newRtfData;
+    referenceElement.element.uuid.string = uuidv4();
+
+    return newSlide;
   }
 
   async function generateFile(presentationData) {

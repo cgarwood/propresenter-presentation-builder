@@ -116,7 +116,7 @@ const {
 
 // Compute properties based on entry type
 function caption(entry) {
-  if (entry.type == "point") return entry.text;
+  if (["point", "quote"].includes(entry.type)) return entry.text;
   if (entry.type == "verse")
     return `${entry.reference ?? ""} ${entry.translation ?? ""}`;
   return "";

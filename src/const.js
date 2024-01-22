@@ -1,5 +1,7 @@
 import PointWidget from "src/components/PointWidget.vue";
 import BibleWidget from "src/components/BibleWidget.vue";
+import QuoteWidget from "src/components/QuoteWidget.vue";
+
 export const outlineEntryTypes = {
   point: {
     label: "Point",
@@ -21,6 +23,13 @@ export const outlineEntryTypes = {
     color: "grey-7",
     textColor: "text-white",
     component: PointWidget,
+  },
+  quote: {
+    label: "Quote",
+    icon: "mdi-comment-quote",
+    color: "teal-8",
+    textColor: "text-white",
+    component: QuoteWidget,
   },
 };
 
