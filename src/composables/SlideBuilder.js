@@ -185,28 +185,12 @@ export function useSlideBuilder() {
       action.slide.presentation.baseSlide.uuid.string = uuidv4();
 
       // Update Verse element
-      const verseElement = action.slide.presentation.baseSlide.elements.find(
-        (e) => ["Text", "TextElement", "Verse"].includes(e.element.name)
+      _updateTextElementByName(action, ["Text", "TextElement", "Verse"], text);
+      _updateTextElementByName(
+        action,
+        ["Caption", "Reference"],
+        entry.reference
       );
-      let rtfData = new TextDecoder().decode(verseElement.element.text.rtfData);
-      let replacedRtf = rtfData.replace("[TEXT]", text);
-      let newRtfData = new TextEncoder().encode(replacedRtf);
-      verseElement.element.text.rtfData = newRtfData;
-      verseElement.element.uuid.string = uuidv4();
-
-      // Update Reference element
-      const referenceElement =
-        action.slide.presentation.baseSlide.elements.find((e) =>
-          ["Caption", "Reference"].includes(e.element.name)
-        );
-      rtfData = new TextDecoder().decode(referenceElement.element.text.rtfData);
-      replacedRtf = rtfData.replace(
-        "[TEXT]",
-        `${entry.reference ?? ""} ${entry.translation ?? ""}`
-      );
-      newRtfData = new TextEncoder().encode(replacedRtf);
-      referenceElement.element.text.rtfData = newRtfData;
-      referenceElement.element.uuid.string = uuidv4();
 
       // Update label
       action.label = {
@@ -230,28 +214,16 @@ export function useSlideBuilder() {
     action.uuid.string = uuidv4();
     action.slide.presentation.baseSlide.uuid.string = uuidv4();
 
-    // Update Quote element
-    const quoteElement = action.slide.presentation.baseSlide.elements.find(
-      (e) => ["Text", "TextElement", "Quote"].includes(e.element.name)
+    _updateTextElementByName(
+      action,
+      ["Text", "TextElement", "Quote"],
+      entry.text
     );
-    let rtfData = new TextDecoder().decode(quoteElement.element.text.rtfData);
-    let replacedRtf = rtfData.replace("[TEXT]", entry.text);
-    let newRtfData = new TextEncoder().encode(replacedRtf);
-    quoteElement.element.text.rtfData = newRtfData;
-    quoteElement.element.uuid.string = uuidv4();
-
-    // Update Reference element
-    const referenceElement = action.slide.presentation.baseSlide.elements.find(
-      (e) =>
-        ["Caption", "Reference", "Author", "Quote Author"].includes(
-          e.element.name
-        )
+    _updateTextElementByName(
+      action,
+      ["Caption", "Reference", "Author", "Quote Author"],
+      entry.author
     );
-    rtfData = new TextDecoder().decode(referenceElement.element.text.rtfData);
-    replacedRtf = rtfData.replace("[TEXT]", `${entry.author ?? ""}`);
-    newRtfData = new TextEncoder().encode(replacedRtf);
-    referenceElement.element.text.rtfData = newRtfData;
-    referenceElement.element.uuid.string = uuidv4();
 
     return newSlide;
   }
@@ -275,6 +247,27 @@ export function useSlideBuilder() {
       }
     }
     return supportedWidgets;
+  }
+
+  function _updateTextElementByName(action, name, text) {
+    // Let the name be an array of allowed names or a single string
+    let element = null;
+    if (Array.isArray(name)) {
+      element = action.slide.presentation.baseSlide.elements.find((e) =>
+        name.includes(e.element.name)
+      );
+    } else {
+      element = action.slide.presentation.baseSlide.elements.find(
+        (e) => e.element.name === name
+      );
+    }
+
+    // Update the rtfData and generate a new UUID
+    const rtfData = new TextDecoder().decode(element.element.text.rtfData);
+    const replacedRtf = rtfData.replace("[TEXT]", text);
+    const newRtfData = new TextEncoder().encode(replacedRtf);
+    element.element.text.rtfData = newRtfData;
+    element.element.uuid.string = uuidv4();
   }
 
   return {
