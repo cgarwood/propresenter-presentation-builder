@@ -15,9 +15,11 @@ Create a Presentation in ProPresenter and add slides with the following labels:
 - Title
 - Point
 - Verse
+- Quote
 - Blank
 
 The Verse slide should contain two text boxes. One textbox named "Reference" or "Caption" for the verse reference, and one named "Text" for the verse text.
+The Quote slide should contain two text boxes. One textbox named "Author" for the quote author, and one named "Text" for the quote text.
 
 Set the font, size, color, etc of the text and insert `[TEXT]` where you want the generated content to be inserted.
 
