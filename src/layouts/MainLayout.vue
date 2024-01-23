@@ -14,16 +14,30 @@
         <q-toolbar-title>Pro7 Presentation Builder</q-toolbar-title>
 
         <div>
+          <q-btn flat icon="mdi-note-plus-outline" @click="newOutline">
+            <q-tooltip>New Outline</q-tooltip>
+          </q-btn>
           <q-btn
             flat
             icon="mdi-folder-open-outline"
             @click="outline.loadOutline"
-          />
+          >
+            <q-tooltip>Open Outline</q-tooltip>
+          </q-btn>
           <q-btn
             flat
             icon="mdi-content-save-outline"
             @click="outline.exportOutline"
-          />
+          >
+            <q-tooltip>Save Outline</q-tooltip>
+            <q-badge
+              color="red"
+              rounded
+              floating
+              v-if="app.unsavedChanges"
+              style="right: 11px; top: 4px"
+            />
+          </q-btn>
         </div>
       </q-toolbar>
     </q-header>
@@ -70,9 +84,13 @@
 
 <script setup>
 import { ref } from "vue";
+import { useQuasar } from "quasar";
 import { useOutlineStore } from "src/stores/outline";
+import { useAppStore } from "src/stores/app";
 
 const outline = useOutlineStore();
+const app = useAppStore();
+const $q = useQuasar();
 
 const leftDrawerOpen = ref(false);
 function toggleLeftDrawer() {
@@ -94,6 +112,37 @@ function toggleMaximize() {
 function closeApp() {
   if (process.env.MODE === "electron") {
     window.myWindowAPI.close();
+  }
+}
+
+function newOutline() {
+  if (app.unsavedChanges) {
+    $q.dialog({
+      title: "Unsaved Changes",
+      message:
+        "Would you like to start a new outline without saving your current changes?",
+      cancel: true,
+      persistent: true,
+      ok: {
+        label: "Discard Changes",
+        color: "negative",
+        flat: true,
+      },
+      cancel: "Save Changes",
+    })
+      .onOk(async () => {
+        outline.newOutline();
+      })
+      .onCancel(async () => {
+        const result = await outline.exportOutline();
+        if (result) outline.newOutline();
+        return;
+      })
+      .onDismiss(() => {
+        return;
+      });
+  } else {
+    outline.newOutline();
   }
 }
 </script>

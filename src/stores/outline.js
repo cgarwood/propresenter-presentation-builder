@@ -1,21 +1,10 @@
 import { defineStore } from "pinia";
+import { useAppStore } from "./app";
 
 export const useOutlineStore = defineStore("outline", {
   state: () => ({
     name: "New Outline",
-    entries: [
-      {
-        type: "point",
-        text: "This is a point slide",
-        notes: "",
-      },
-      {
-        type: "verse",
-        reference: "John 3:16",
-        translation: "NIV",
-        notes: "",
-      },
-    ],
+    entries: [],
     template: null,
     templatePath: null,
   }),
@@ -28,12 +17,27 @@ export const useOutlineStore = defineStore("outline", {
     },
     async exportOutline() {
       const data = JSON.stringify(this.$state);
-      await window.fileApi.saveOutline(data, `${this.name}.json`);
+      const result = await window.fileApi.saveOutline(
+        data,
+        `${this.name}.json`
+      );
+      if (result) {
+        const app = useAppStore();
+        app.unsavedChanges = false;
+      }
+      return result;
     },
+
     async loadOutline() {
       const { path, data } = await window.fileApi.openOutline();
-      console.log(data);
       this.$patch(JSON.parse(data));
+    },
+
+    async newOutline() {
+      const store = useOutlineStore();
+      const app = useAppStore();
+      store.$reset();
+      app.unsavedChanges = false;
     },
   },
 });

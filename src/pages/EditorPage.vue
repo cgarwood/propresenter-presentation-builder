@@ -10,7 +10,15 @@
       @click="openTemplate"
     />
     <q-list bordered>
-      <Container @drop="onDrop">
+      <div v-if="outline.entries.length === 0" class="q-pa-md flex-center">
+        <div class="text-h5 text-grey-7" style="text-align: center">
+          This outline is empty...
+        </div>
+        <div class="text-body text-grey-7 q-mt-sm" style="text-align: center">
+          Click <b>New Item</b> below to add items to your outline.
+        </div>
+      </div>
+      <Container @drop="onDrop" v-else>
         <Draggable v-for="(entry, index) in outline.entries" :key="index">
           <q-expansion-item
             :expand-separator="true"
@@ -98,6 +106,7 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { Container, Draggable } from "vue3-smooth-dnd";
 import { useOutlineStore } from "../stores/outline";
@@ -113,6 +122,14 @@ const {
   generateFile,
   getSupportedWidgets,
 } = useSlideBuilder();
+
+onMounted(async () => {
+  outline.$subscribe((mutation) => {
+    if (mutation.type == "direct") {
+      app.unsavedChanges = true;
+    }
+  });
+});
 
 // Compute properties based on entry type
 function caption(entry) {

@@ -122,10 +122,11 @@ contextBridge.exposeInMainWorld("fileApi", {
     });
 
     if (path.canceled) {
-      return;
+      return false;
     }
 
     fs.writeFileSync(path.filePath, data);
+    return true;
   },
 
   async openOutline() {
