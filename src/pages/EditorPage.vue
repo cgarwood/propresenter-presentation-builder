@@ -100,7 +100,12 @@
         label="Generate Presentation"
         @click="buildDocumentFromOutline"
         color="green-7"
-      />
+        :disable="outline.template === null"
+      >
+        <q-tooltip v-if="outline.template === null">
+          You must first select a ProPresenter template"
+        </q-tooltip>
+      </q-btn>
     </q-page-sticky>
   </q-page>
 </template>
