@@ -23,4 +23,6 @@ jobs:
       - name: Zip Application
         run: zip -r Pro7PresentationBuilder_${{ github.event.release.tag_name }}_${{ runner.os }}.zip dist/electron/Packaged/*
       - name: Publish Asset
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: gh release upload $GITHUB_REF Pro7PresentationBuilder_${{ github.event.release.tag_name }}_${{ runner.os }}.zip
