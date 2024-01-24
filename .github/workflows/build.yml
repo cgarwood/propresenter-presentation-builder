@@ -1,5 +1,7 @@
 name: Build Application
-on: push
+on:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -16,6 +18,12 @@ jobs:
           node-version: 18.x
       - name: Install Dependencies
         run: yarn install && yarn global add @quasar/cli
+      - name: Get Version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
       - name: Build Application
         run: yarn quasar build -m electron
-
+      - name: Zip Application
+        run: zip -r Pro7PresentationBuilder_${{ steps.package-version.outputs.current-version }}_${{ matrix.os }}.zip dist/electron/Packaged/*
+      - name: Publish Asset
+        run: gh release upload $GITHUB_REF Pro7PresentationBuilder_${{ steps.package-version.outputs.current-version }}_${{ matrix.os }}.zip
