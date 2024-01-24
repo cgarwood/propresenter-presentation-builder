@@ -1,0 +1,21 @@
+name: Build Application
+on: push
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Node/Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+      - name: Install Dependencies
+        run: yarn install && yarn global add @quasar/cli
+      - name: Build Application
+        run: quasar build -m electron
+
