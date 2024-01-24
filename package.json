@@ -39,6 +39,10 @@
     "prettier": "^3.2.4",
     "typescript": "^5.2.2"
   },
+  "resolutions": {
+    "vite": "^5.0.7",
+    "@vitejs/plugin-vue": "^4.5.2"
+  },
   "engines": {
     "node": "^20 || ^18",
     "npm": ">= 6.13.4",

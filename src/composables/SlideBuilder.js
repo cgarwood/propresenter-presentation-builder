@@ -32,7 +32,10 @@ export function useSlideBuilder() {
   }
 
   async function getPresentationTemplate(template) {
-    const presentationProto = await protobuf.load("/proto/presentation.proto");
+    const protoDir = window.fileApi.getProtoDir();
+    const presentationProto = await protobuf.load(
+      `${protoDir}/presentation.proto`
+    );
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
     templateData = toRaw(template);
@@ -42,7 +45,10 @@ export function useSlideBuilder() {
   }
 
   async function getSlideTemplate(name) {
-    const presentationProto = await protobuf.load("/proto/presentation.proto");
+    const protoDir = window.fileApi.getProtoDir();
+    const presentationProto = await protobuf.load(
+      `${protoDir}/presentation.proto`
+    );
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
     const pres = await Presentation.decode(templateData);
@@ -229,7 +235,10 @@ export function useSlideBuilder() {
   }
 
   async function generateFile(presentationData) {
-    const presentationProto = await protobuf.load("/proto/presentation.proto");
+    const protoDir = window.fileApi.getProtoDir();
+    const presentationProto = await protobuf.load(
+      `${protoDir}/presentation.proto`
+    );
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
     const newPresBuffer = Presentation.encode(presentationData).finish();

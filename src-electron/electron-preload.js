@@ -167,4 +167,11 @@ contextBridge.exposeInMainWorld("fileApi", {
     const file = fs.readFileSync(filePath);
     return { path: filePath, data: file };
   },
+
+  getProtoDir() {
+    if (process.env.DEV) {
+      return "/proto";
+    }
+    return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER, "./proto");
+  },
 });
