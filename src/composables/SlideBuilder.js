@@ -34,7 +34,7 @@ export function useSlideBuilder() {
   async function getPresentationTemplate(template) {
     const protoDir = window.fileApi.getProtoDir();
     const presentationProto = await protobuf.load(
-      `${protoDir}/presentation.proto`
+      `${protoDir}/presentation.proto`,
     );
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
@@ -47,7 +47,7 @@ export function useSlideBuilder() {
   async function getSlideTemplate(name) {
     const protoDir = window.fileApi.getProtoDir();
     const presentationProto = await protobuf.load(
-      `${protoDir}/presentation.proto`
+      `${protoDir}/presentation.proto`,
     );
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
@@ -95,7 +95,7 @@ export function useSlideBuilder() {
 
     const textElementIndex =
       action.slide.presentation.baseSlide.elements.findIndex(
-        (e) => e.element.text.rtfData !== null
+        (e) => e.element.text.rtfData !== null,
       );
     const textElement =
       action.slide.presentation.baseSlide.elements[textElementIndex];
@@ -195,7 +195,7 @@ export function useSlideBuilder() {
       _updateTextElementByName(
         action,
         ["Caption", "Reference"],
-        entry.reference
+        entry.reference,
       );
 
       // Update label
@@ -223,12 +223,12 @@ export function useSlideBuilder() {
     _updateTextElementByName(
       action,
       ["Text", "TextElement", "Quote"],
-      entry.text
+      entry.text,
     );
     _updateTextElementByName(
       action,
-      ["Caption", "Reference", "Author", "Quote Author"],
-      entry.author
+      ["Caption", "Reference", "Author", "Quote Author", "Name"],
+      entry.author,
     );
 
     return newSlide;
@@ -237,7 +237,7 @@ export function useSlideBuilder() {
   async function generateFile(presentationData) {
     const protoDir = window.fileApi.getProtoDir();
     const presentationProto = await protobuf.load(
-      `${protoDir}/presentation.proto`
+      `${protoDir}/presentation.proto`,
     );
     const Presentation = presentationProto.lookupType("rv.data.Presentation");
 
@@ -263,11 +263,11 @@ export function useSlideBuilder() {
     let element = null;
     if (Array.isArray(name)) {
       element = action.slide.presentation.baseSlide.elements.find((e) =>
-        name.includes(e.element.name)
+        name.includes(e.element.name),
       );
     } else {
       element = action.slide.presentation.baseSlide.elements.find(
-        (e) => e.element.name === name
+        (e) => e.element.name === name,
       );
     }
 
