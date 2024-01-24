@@ -17,11 +17,7 @@
           <q-btn flat icon="mdi-note-plus-outline" @click="newOutline">
             <q-tooltip>New Outline</q-tooltip>
           </q-btn>
-          <q-btn
-            flat
-            icon="mdi-folder-open-outline"
-            @click="outline.loadOutline"
-          >
+          <q-btn flat icon="mdi-folder-open-outline" @click="loadOutline">
             <q-tooltip>Open Outline</q-tooltip>
           </q-btn>
           <q-btn
@@ -84,6 +80,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import { useOutlineStore } from "src/stores/outline";
 import { useAppStore } from "src/stores/app";
@@ -91,6 +88,7 @@ import { useAppStore } from "src/stores/app";
 const outline = useOutlineStore();
 const app = useAppStore();
 const $q = useQuasar();
+const router = useRouter();
 
 const leftDrawerOpen = ref(false);
 function toggleLeftDrawer() {
@@ -115,6 +113,13 @@ function closeApp() {
   }
 }
 
+function loadOutline() {
+  const result = outline.loadOutline();
+  if (result) {
+    router.push("/editor");
+  }
+}
+
 function newOutline() {
   if (app.unsavedChanges) {
     $q.dialog({
@@ -132,6 +137,7 @@ function newOutline() {
     })
       .onOk(async () => {
         outline.newOutline();
+        router.push("/editor");
       })
       .onCancel(async () => {
         const result = await outline.exportOutline();
@@ -143,6 +149,7 @@ function newOutline() {
       });
   } else {
     outline.newOutline();
+    router.push("/editor");
   }
 }
 </script>

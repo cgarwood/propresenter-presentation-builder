@@ -141,7 +141,7 @@ contextBridge.exposeInMainWorld("fileApi", {
     });
 
     if (openPath.canceled) {
-      return;
+      return false;
     }
     const filePath = openPath.filePaths[0];
     const file = fs.readFileSync(filePath);

@@ -19,7 +19,7 @@ export const useOutlineStore = defineStore("outline", {
       const data = JSON.stringify(this.$state);
       const result = await window.fileApi.saveOutline(
         data,
-        `${this.name}.json`
+        `${this.name}.json`,
       );
       if (result) {
         const app = useAppStore();
@@ -29,8 +29,11 @@ export const useOutlineStore = defineStore("outline", {
     },
 
     async loadOutline() {
-      const { path, data } = await window.fileApi.openOutline();
-      this.$patch(JSON.parse(data));
+      const result = await window.fileApi.openOutline();
+      if (!result) return false;
+
+      this.$patch(JSON.parse(result.data));
+      return true;
     },
 
     async newOutline() {
