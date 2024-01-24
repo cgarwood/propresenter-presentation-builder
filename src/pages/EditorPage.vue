@@ -1,6 +1,19 @@
 <template>
   <q-page class="q-pa-md">
-    <q-input outlined label="Title" class="q-mb-md" v-model="outline.name" />
+    <div class="row q-col-gutter-sm">
+      <q-input
+        outlined
+        label="Title"
+        class="q-mb-md col-md-4 col-sm-4 col-xs-12"
+        v-model="outline.name"
+      />
+      <q-input
+        outlined
+        label="Subtitle"
+        class="q-mb-md col-md-8 col-sm-8 col-xs-12"
+        v-model="outline.subtitle"
+      />
+    </div>
     <q-input
       outlined
       label="ProPresenter Template"

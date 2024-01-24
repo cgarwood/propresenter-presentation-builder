@@ -4,6 +4,7 @@ import { useAppStore } from "./app";
 export const useOutlineStore = defineStore("outline", {
   state: () => ({
     name: "New Outline",
+    subtitle: "",
     entries: [],
     template: null,
     templatePath: null,
