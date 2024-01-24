@@ -1,0 +1,29 @@
+name: Build Application
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Node/Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+      - name: Install Dependencies
+        run: yarn install && yarn global add @quasar/cli
+      - name: Get Version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+      - name: Build Application
+        run: yarn quasar build -m electron
+      - name: Zip Application
+        run: zip -r Pro7PresentationBuilder_${{ steps.package-version.outputs.current-version }}_${{ runner.os }}.zip dist/electron/Packaged/*
+      - name: Publish Asset
+        run: gh release upload $GITHUB_REF Pro7PresentationBuilder_${{ steps.package-version.outputs.current-version }}_${{ runner.os }}.zip
