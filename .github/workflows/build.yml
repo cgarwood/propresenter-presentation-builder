@@ -20,8 +20,14 @@ jobs:
         run: yarn install && yarn global add @quasar/cli
       - name: Build Application
         run: yarn quasar build -m electron
-      - name: Zip Application
+
+      - name: Zip Application (Linux & Mac)
         run: zip -r Pro7PresentationBuilder_${{ github.event.release.tag_name }}_${{ runner.os }}.zip dist/electron/Packaged/*
+        if: runner.os != 'Windows'
+      - name: Zip Application (Windows)
+        run: Compress-Archive -Path dist\electron\Packaged\* -DestinationPath Pro7PresentationBuilder_${{ github.event.release.tag_name }}_${{ runner.os }}.zip
+        if: runner.os == 'Windows'
+
       - name: Publish Asset
         env:
           GH_TOKEN: ${{ github.token }}
