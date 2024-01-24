@@ -17,5 +17,5 @@ jobs:
       - name: Install Dependencies
         run: yarn install && yarn global add @quasar/cli
       - name: Build Application
-        run: quasar build -m electron
+        run: yarn quasar build -m electron
 
