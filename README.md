@@ -10,27 +10,15 @@ Thanks to @greyshirtguy for reverse-engineering the ProPresenter [protobuf files
 
 ## Template Setup
 
-Create a Presentation in ProPresenter and add slides with the following labels:
+Check the [wiki](https://github.com/cgarwood/propresenter-presentation-builder/wiki) for documentation on setting up templates.
 
-- Title
-- Point
-- Verse
-- Quote
-- Blank
+## Development
 
-The Verse slide should contain two text boxes. One textbox named "Reference" or "Caption" for the verse reference, and one named "Text" for the verse text.
-The Quote slide should contain two text boxes. One textbox named "Author" for the quote author, and one named "Text" for the quote text.
-
-Set the font, size, color, etc of the text and insert `[TEXT]` where you want the generated content to be inserted.
-
-Template slides can contain various cues, like Stage Display cues, Macros, Clear action cues, etc.
-
-## Install the dependencies
+### Install the dependencies
 
 ```bash
+yarn global add @quasar/cli
 yarn
-# or
-npm install
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
@@ -42,5 +30,5 @@ quasar dev -m electron
 ### Build the app for production
 
 ```bash
-quasar build
+quasar build -m electron
 ```
