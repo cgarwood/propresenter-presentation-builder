@@ -271,11 +271,22 @@ export function useSlideBuilder() {
       );
     }
 
-    // Update the rtfData and generate a new UUID
+    // Update the rtfData
     const rtfData = new TextDecoder().decode(element.element.text.rtfData);
     const replacedRtf = rtfData.replace("[TEXT]", text);
     const newRtfData = new TextEncoder().encode(replacedRtf);
     element.element.text.rtfData = newRtfData;
+
+    // Check for custom attributes (capitalization/gradientFill/etc) and update the range
+    if (element.element.text.attributes.customAttributes) {
+      for (const attr of element.element.text.attributes.customAttributes) {
+        if (attr.range) {
+          attr.range.end = replacedRtf.length;
+        }
+      }
+    }
+
+    // Generate a new UUID
     element.element.uuid.string = uuidv4();
   }
 
