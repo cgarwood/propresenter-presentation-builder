@@ -39,7 +39,7 @@
             <q-item-section>
               <q-item-label>Last Used</q-item-label>
               <q-item-label caption>{{
-                prettyDate(presentation.lastDateUsed.seconds)
+                prettyDate(presentation.lastDateUsed?.seconds)
               }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -47,7 +47,7 @@
             <q-item-section>
               <q-item-label>Last Modified</q-item-label>
               <q-item-label caption>{{
-                prettyDate(presentation.lastModifiedDate.seconds)
+                prettyDate(presentation.lastModifiedDate?.seconds)
               }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -91,7 +91,7 @@
                     class="q-mx-sm"
                     :style="{
                       backgroundColor: convertPro7ColorToRGBA(
-                        getGroupForUUID(cue.uuid.string).group.color
+                        getGroupForUUID(cue.uuid.string).group.color,
                       ),
                     }"
                     v-if="getGroupForUUID(cue.uuid.string)"
@@ -119,36 +119,27 @@
                   </q-item-section>
                 </template>
                 <div>
-                  <q-list bordered separator>
-                    <q-item
-                      v-if="
-                        getSlideLayerForCue(cue).slide.presentation.baseSlide
-                          .elements
-                      "
+                  <q-expansion-item
+                    v-if="
+                      getSlideLayerForCue(cue).slide.presentation.baseSlide
+                        .elements
+                    "
+                    label="Slide Elements"
+                    header-class="bg-grey-3"
+                    class="q-pa-sm"
+                  >
+                    <q-expansion-item
+                      v-for="el in getSlideLayerForCue(cue).slide.presentation
+                        .baseSlide.elements"
+                      :key="el.element.uuid.string"
+                      :label="el.element.name"
+                      :caption="el.element.uuid.string"
                     >
-                      <q-item-section>
-                        <q-item-label overline>Slide Elements</q-item-label>
-                      </q-item-section>
-                      <q-item-section>
-                        <q-list bordered separator>
-                          <q-item
-                            v-for="el in getSlideLayerForCue(cue).slide
-                              .presentation.baseSlide.elements"
-                            :key="el.element.uuid.string"
-                          >
-                            <q-item-section>
-                              <q-item-label>{{ el.element.name }}</q-item-label>
-                            </q-item-section>
-                            <q-item-section>
-                              <q-item-label caption lines="1">{{
-                                el.element.uuid.string
-                              }}</q-item-label>
-                            </q-item-section>
-                          </q-item>
-                        </q-list>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
+                      <div v-if="el.element.text.rtfData">
+                        {{ rtfData(el.element.text.rtfData) }}
+                      </div>
+                    </q-expansion-item>
+                  </q-expansion-item>
                 </div>
               </q-expansion-item>
               <q-expansion-item
@@ -227,7 +218,7 @@ function debug() {
 
 function getGroupForUUID(uuid) {
   return presentation.value.cueGroups.find((group) =>
-    group.cueIdentifiers.some((cue) => cue.string === uuid)
+    group.cueIdentifiers.some((cue) => cue.string === uuid),
   );
 }
 function convertPro7ColorToRGBA(color) {
@@ -246,6 +237,10 @@ function getMediaLayerForCue(cue) {
 function prettyDate(timestamp) {
   const d = new Date(timestamp * 1000);
   return date.formatDate(d, "YYYY-MM-DD");
+}
+
+function rtfData(rtf) {
+  return new TextDecoder().decode(rtf);
 }
 </script>
 
