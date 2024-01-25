@@ -154,6 +154,13 @@ function caption(entry) {
   if (["point", "quote"].includes(entry.type)) return entry.text;
   if (entry.type == "verse")
     return `${entry.reference ?? ""} ${entry.translation ?? ""}`;
+  if (entry.type == "callouts") {
+    const callouts = [];
+    if (entry.callout1title) callouts.push(entry.callout1title);
+    if (entry.callout2title) callouts.push(entry.callout2title);
+    if (entry.callout3title) callouts.push(entry.callout3title);
+    return callouts.join(" \u2022 ");
+  }
   return "";
 }
 

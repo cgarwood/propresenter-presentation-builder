@@ -26,6 +26,8 @@ export function useSlideBuilder() {
         return await buildQuoteSlide(slide, template);
       case "blank":
         return await buildBlankSlide(slide, template);
+      case "callouts":
+        return await buildCalloutsSlide(slide, template);
       default:
         throw new Error(`Template ${template} not found`);
     }
@@ -175,6 +177,51 @@ export function useSlideBuilder() {
       action,
       ["Caption", "Reference", "Author", "Quote Author", "Name"],
       entry.author,
+    );
+
+    return newSlide;
+  }
+
+  async function buildCalloutsSlide(entry, template) {
+    const newSlide = await getSlideTemplate(template);
+
+    // Give it a new UUID
+    newSlide.uuid.string = uuidv4();
+
+    // Find the action for the slide layer
+    const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
+    action.uuid.string = uuidv4();
+    action.slide.presentation.baseSlide.uuid.string = uuidv4();
+
+    _updateTextElementByName(
+      action,
+      ["Topic 1", "Title 1"],
+      entry.callout1title,
+    );
+    _updateTextElementByName(
+      action,
+      ["Description 1", "Content 1", "Text 1"],
+      entry.callout1text,
+    );
+    _updateTextElementByName(
+      action,
+      ["Topic 2", "Title 2"],
+      entry.callout2title,
+    );
+    _updateTextElementByName(
+      action,
+      ["Description 2", "Content 2", "Text 2"],
+      entry.callout2text,
+    );
+    _updateTextElementByName(
+      action,
+      ["Topic 3", "Title 3"],
+      entry.callout3title,
+    );
+    _updateTextElementByName(
+      action,
+      ["Description 3", "Content 3", "Text 3"],
+      entry.callout3text,
     );
 
     return newSlide;

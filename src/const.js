@@ -1,6 +1,7 @@
 import PointWidget from "src/components/PointWidget.vue";
 import BibleWidget from "src/components/BibleWidget.vue";
 import QuoteWidget from "src/components/QuoteWidget.vue";
+import CalloutsWidget from "src/components/CalloutsWidget.vue";
 
 export const outlineEntryTypes = {
   point: {
@@ -31,10 +32,17 @@ export const outlineEntryTypes = {
     textColor: "text-white",
     component: QuoteWidget,
   },
+  callouts: {
+    label: "Callouts",
+    icon: "mdi-comment-multiple-outline",
+    color: "purple-9",
+    textColor: "text-white",
+    component: CalloutsWidget,
+  },
 };
 
 export const templateLabels = Object.values(outlineEntryTypes).map((entry) =>
-  entry.label.toLowerCase()
+  entry.label.toLowerCase(),
 );
 
 export const ACTION_SLIDE = 11;
