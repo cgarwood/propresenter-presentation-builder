@@ -68,8 +68,22 @@ export function useSlideBuilder() {
   }
 
   async function buildTitleSlide(entry, template) {
+    if (entry.subtitle != "") {
+      if (await slideTemplateExists(templateData, "title with subtitle")) {
+        template = "title with subtitle";
+      }
+    }
     const newSlide = await getSlideTemplate(template);
     newSlide.uuid.string = uuidv4();
+
+    const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
+    action.uuid.string = uuidv4();
+    action.slide.presentation.baseSlide.uuid.string = uuidv4();
+    action.label = {};
+
+    _updateTextElementByName(action, "Title", entry.text);
+    _updateTextElementByName(action, "Subtitle", entry.subtitle);
+
     return newSlide;
   }
 
@@ -248,6 +262,20 @@ export function useSlideBuilder() {
       }
     }
     return supportedWidgets;
+  }
+
+  async function slideTemplateExists(pres, template) {
+    let exists = false;
+    const presentation = await getPresentationTemplate(pres);
+
+    for (const cue of presentation.cues) {
+      const action = cue.actions.find((a) => a.type === ACTION_SLIDE);
+      if (action.label.text.toLowerCase() === template.toLowerCase()) {
+        exists = true;
+        break;
+      }
+    }
+    return exists;
   }
 
   function _updateTextElementByName(action, name, text) {

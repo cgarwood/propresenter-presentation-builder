@@ -214,13 +214,21 @@ async function buildDocumentFromOutline() {
   presentation.cueGroups = [];
 
   // Set presentation details
-  presentation.name = outline.name;
+  presentation.name = `${outline.name}${outline.subtitle ? `: ${outline.subtitle}` : ""}`;
   presentation.uuid.string = uuidv4();
   presentation.selectedArrangement.string = uuidv4();
 
   // Build the slides
   const slides = [];
-  slides.push(await buildSlideFromTemplate({}, "title"));
+
+  // Build the title slide
+  slides.push(
+    await buildSlideFromTemplate(
+      { text: outline.name, subtitle: outline.subtitle },
+      "title",
+    ),
+  );
+
   for (const entry of outline.entries) {
     // If the loaded template doesn't support the widget, don't attempt to build it
     if (!app.supportedWidgets.includes(entry.type)) continue;
