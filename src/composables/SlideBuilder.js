@@ -100,15 +100,7 @@ export function useSlideBuilder() {
     const textElement =
       action.slide.presentation.baseSlide.elements[textElementIndex];
 
-    //rtfData is a Uint8Array, so we need to convert it to a string
-    const rtfData = new TextDecoder().decode(textElement.element.text.rtfData);
-    const replacedRtf = rtfData.replace("[TEXT]", entry.text);
-
-    // Convert the string back to a Uint8Array
-    const newRtfData = new TextEncoder().encode(replacedRtf);
-    textElement.element.text.rtfData = newRtfData;
-
-    textElement.element.uuid.string = uuidv4();
+    _updateTextElement(textElement, entry.text);
 
     action.label = {};
 
@@ -271,6 +263,10 @@ export function useSlideBuilder() {
       );
     }
 
+    _updateTextElement(element, text);
+  }
+
+  function _updateTextElement(element, text) {
     // Update the rtfData
     const rtfData = new TextDecoder().decode(element.element.text.rtfData);
     const replacedRtf = rtfData.replace("[TEXT]", text);
