@@ -267,7 +267,7 @@ export function useSlideBuilder() {
 
   function _updateTextElementByName(action, name, text) {
     // Let the name be an array of allowed names or a single string
-    let element = null;
+    let element = undefined;
     if (Array.isArray(name)) {
       element = action.slide.presentation.baseSlide.elements.find((e) =>
         name.includes(e.element.name),
@@ -276,6 +276,11 @@ export function useSlideBuilder() {
       element = action.slide.presentation.baseSlide.elements.find(
         (e) => e.element.name === name,
       );
+    }
+
+    if (!element) {
+      console.debug("No text element found named ", name);
+      return;
     }
 
     _updateTextElement(element, text);
