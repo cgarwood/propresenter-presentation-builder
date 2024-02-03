@@ -151,7 +151,7 @@ onMounted(async () => {
 
 // Compute properties based on entry type
 function caption(entry) {
-  if (["point", "quote"].includes(entry.type)) return entry.text;
+  if (["point", "quote", "list"].includes(entry.type)) return entry.text;
   if (entry.type == "verse")
     return `${entry.reference ?? ""} ${entry.translation ?? ""}`;
   if (entry.type == "callouts") {

@@ -28,6 +28,8 @@ export function useSlideBuilder() {
         return await buildBlankSlide(slide, template);
       case "callouts":
         return await buildCalloutsSlide(slide, template);
+      case "list":
+        return await buildListSlide(slide, template);
       default:
         throw new Error(`Template ${template} not found`);
     }
@@ -177,6 +179,72 @@ export function useSlideBuilder() {
       action,
       ["Caption", "Reference", "Author", "Quote Author", "Name"],
       entry.author,
+    );
+
+    return newSlide;
+  }
+
+  async function buildListSlide(entry, template) {
+    const newSlide = await getSlideTemplate(template);
+
+    // Give it a new UUID
+    newSlide.uuid.string = uuidv4();
+
+    // Find the action for the slide layer
+    const action = newSlide.actions.find((a) => a.type === ACTION_SLIDE);
+    action.uuid.string = uuidv4();
+    action.slide.presentation.baseSlide.uuid.string = uuidv4();
+
+    const listElement = action.slide.presentation.baseSlide.elements.find((e) =>
+      ["Text", "TextElement", "List", "Presentation Points"].includes(
+        e.element.name,
+      ),
+    );
+
+    let rtfData = new TextDecoder().decode(listElement.element.text.rtfData);
+
+    for (const listItem of entry.items) {
+      // Find the last list level and extract its properties
+      const lastListLevelMatch = rtfData.match(
+        /\\leveltemplateid(\d+) \\'01\\u(\w+) \?;/g,
+      );
+      const lastListLevel = lastListLevelMatch[lastListLevelMatch.length - 1];
+      const [, templateId, unicodeCharacter] = lastListLevel.match(
+        /\\leveltemplateid(\d+) \\'01\\u(\w+) \?;/,
+      );
+
+      // Increment the templateId for the new list item
+      const newTemplateId = parseInt(templateId) + 1;
+
+      // Build the new list item with the incremented templateId
+      const newListLevel = `\\leveltemplateid${newTemplateId} \\'01\\u${unicodeCharacter} ?;`;
+
+      // Extract formatting for the list items
+      const formattingMatch = rtfData.match(/\\pard(.+?)(\\par|})/);
+      const formatting = formattingMatch ? formattingMatch[1] : "";
+      console.log(formattingMatch, formatting);
+
+      // Build the new text with the extracted formatting
+      const newTextWithFormatting = `\\pard${formatting} ${listItem}\\par`;
+
+      // Replace the last list item with the new list item
+      const modifiedDocument = rtfData.replace(
+        lastListLevel,
+        lastListLevel + newListLevel,
+      );
+
+      rtfData = modifiedDocument + newTextWithFormatting;
+
+      console.log(rtfData);
+    }
+
+    listElement.element.text.rtfData = new TextEncoder().encode(rtfData);
+    listElement.element.uuid.string = uuidv4();
+
+    _updateTextElementByName(
+      action,
+      ["Title", "Caption", "Main Title"],
+      entry.text,
     );
 
     return newSlide;

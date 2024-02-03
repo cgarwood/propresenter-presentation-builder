@@ -2,6 +2,7 @@ import PointWidget from "src/components/PointWidget.vue";
 import BibleWidget from "src/components/BibleWidget.vue";
 import QuoteWidget from "src/components/QuoteWidget.vue";
 import CalloutsWidget from "src/components/CalloutsWidget.vue";
+import ListWidget from "src/components/ListWidget.vue";
 
 export const outlineEntryTypes = {
   point: {
@@ -38,6 +39,13 @@ export const outlineEntryTypes = {
     color: "purple-9",
     textColor: "text-white",
     component: CalloutsWidget,
+  },
+  list: {
+    label: "List",
+    icon: "mdi-format-list-bulleted",
+    color: "orange-9",
+    textColor: "text-white",
+    component: ListWidget,
   },
 };
 
