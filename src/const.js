@@ -2,6 +2,12 @@ import PointWidget from "src/components/PointWidget.vue";
 import BibleWidget from "src/components/BibleWidget.vue";
 import QuoteWidget from "src/components/QuoteWidget.vue";
 import CalloutsWidget from "src/components/CalloutsWidget.vue";
+import { TitleSlide } from "src/builders/TitleSlide";
+import { PointSlide } from "src/builders/PointSlide";
+import { VerseSlide } from "src/builders/VerseSlide";
+import { QuoteSlide } from "src/builders/QuoteSlide";
+import { CalloutsSlide } from "src/builders/CalloutsSlide";
+import { BlankSlide } from "src/builders/BlankSlide";
 
 export const outlineEntryTypes = {
   point: {
@@ -39,6 +45,15 @@ export const outlineEntryTypes = {
     textColor: "text-white",
     component: CalloutsWidget,
   },
+};
+
+export const slideBuilders = {
+  title: TitleSlide,
+  point: PointSlide,
+  verse: VerseSlide,
+  blank: BlankSlide,
+  quote: QuoteSlide,
+  callouts: CalloutsSlide,
 };
 
 export const templateLabels = Object.values(outlineEntryTypes).map((entry) =>

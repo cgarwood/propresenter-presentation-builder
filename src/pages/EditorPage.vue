@@ -231,7 +231,7 @@ async function buildDocumentFromOutline() {
   // Build the title slide
   slides.push(
     await buildSlideFromTemplate(
-      { text: outline.name, subtitle: outline.subtitle },
+      { title: outline.name, subtitle: outline.subtitle },
       "title",
     ),
   );
